@@ -4,28 +4,27 @@
 ![Language](https://img.shields.io/badge/TypeScript-100%25-blue?style=for-the-badge)
 ![Backend](https://img.shields.io/badge/Backend-Express%20%2B%20Prisma-orange?style=for-the-badge)
 ![Frontend](https://img.shields.io/badge/Frontend-React%20%2B%20Vite-blueviolet?style=for-the-badge)
-![Database](https://img.shields.io/badge/DB-PostgreSQL-316192?style=for-the-badge&logo=postgresql)
-![Rendering](https://img.shields.io/badge/Hosting-Render%20%2F%20Vercel-black?style=for-the-badge)
+![Database](https://img.shields.io/badge/DB-PostgreSQL%20(Render)-316192?style=for-the-badge&logo=postgresql)
+![Hosting](https://img.shields.io/badge/Hosting-Render%20%2B%20Vercel-black?style=for-the-badge)
 
 ---
 
 ## 🖼 Screenshots Preview
 
-| Home | Search | Flight Results |
+| Home | Search | Results |
 |---|---|---|
-| ![ss](screenshots/home.png) | ![ss](screenshots/search.png) | ![ss](screenshots/results.png) |
+| ![](screenshots/home.png) | ![](screenshots/search.png) | ![](screenshots/results.png) |
 
-| Flight Details | Booking Success | Booking History |
+| Details | Success | History |
 |---|---|---|
-| ![ss](screenshots/details.png) | ![ss](screenshots/success.png) | ![ss](screenshots/history.png) |
-
+| ![](screenshots/details.png) | ![](screenshots/success.png) | ![](screenshots/history.png) |
 
 ---
 
 ## 📂 Project Structure
 
 ```
-flight-booking-assignment/
+FlightBooker/
 │── backend/       → Node + Express + Prisma + Auth API
 │── frontend/      → React + Vite + Tailwind + Axios
 └── README.md
@@ -40,30 +39,38 @@ cd backend
 npm install
 ```
 
-### Create `.env` inside backend 📄
+### 📄 Create `.env` inside backend
 
 ```
-DATABASE_URL=postgresql://USER:PASSWORD@HOST:5432/DBNAME?sslmode=require
-JWT_SECRET=your_secret_key
+DATABASE_URL="postgresql://<USERNAME>:<PASSWORD>@<HOST>:5432/<DB_NAME>?sslmode=require"
+JWT_SECRET="your_secret_key_here"
 PORT=4000
 ```
 
-### Run DB migrations
+🔹 DB URL taken from **Render PostgreSQL Dashboard**  
+🔹 `sslmode=require` **must be included** for production
+
+---
+
+### ▶ Initialize DB
+
 ```bash
-npx prisma migrate dev --name init
+npx prisma migrate deploy
 ```
 
-### Seed Flights for 4 Months Automatically
+### 🌍 Seed flights for next 4 months
+
 ```bash
 npm run prisma:seed
 ```
 
-### Start backend
+### 🚀 Start server
+
 ```bash
 npm run dev
 ```
 
-Backend now running →  
+Backend Live →  
 👉 http://localhost:4000
 
 ---
@@ -75,18 +82,19 @@ cd frontend
 npm install
 ```
 
-### Create `.env` inside frontend
+### 📄 Create `.env`
 
 ```
 VITE_API_URL=http://localhost:4000
 ```
 
-### Start client
+### Run client
+
 ```bash
 npm run dev
 ```
 
-Frontend →  
+Frontend running →  
 👉 http://localhost:5173
 
 ---
@@ -94,6 +102,7 @@ Frontend →
 ## 🚀 Production Build
 
 ### Backend
+
 ```bash
 cd backend
 npm run build
@@ -101,57 +110,58 @@ node dist/index.js
 ```
 
 ### Frontend
+
 ```bash
 cd frontend
 npm run build
 ```
 
-Output → `frontend/dist`
+Output → `/frontend/dist`
 
 ---
 
 ## 🔥 Features
 
-- JWT Auth & Session Persistence
-- Search + Filter Flights
-- Booking with Passenger Info
-- Booking History Dashboard
-- Database Seeder — generates flights for **next 4 months**
-- Fully Responsive UI w/ Mobile Navigation
-- TypeScript everywhere
+- JWT Login + Persistent Auth
+- Search + Filter flights
+- Booking with passenger details
+- Booking history dashboard
+- Seeder — generates flights for **120+ days**
+- Fully responsive UI
+- Typescript everywhere (Backend + Frontend)
 
 ---
 
-## 🛣 API Endpoints
+## 🛣 API Routes
 
-| Method | Route | Description |
+| Method | Endpoint | Purpose |
 |---|---|---|
-| POST `/auth/signup` | Register |
-| POST `/auth/login` | Login + Get Token |
-| GET `/flights/search` | Fetch flights |
+| POST `/auth/signup` | Register user |
+| POST `/auth/login` | Get Token |
+| GET `/flights/search` | Search flights |
 | POST `/booking` | Create booking |
-| GET `/booking/:id` | Single booking |
-| GET `/booking` | All user bookings |
+| GET `/booking/:id` | Booking details |
+| GET `/booking` | User booking history |
 
 ---
 
 ## 🌍 Deployment Guide
 
-### Backend (Render)
+### 🔹 Backend — Render
 
 | Setting | Value |
 |---|---|
 | **Root Directory** | `backend` |
 | **Build Command** | `npm install && npm run build` |
 | **Start Command** | `node dist/index.js` |
-| **Env Vars** | Add `.env` values |
+| **Environment Vars** | DATABASE_URL, JWT_SECRET, PORT=4000 |
 
-After deploy → Copy API URL  
-Example: `https://flyswift-api.onrender.com`
+📌 Must attach **Render PostgreSQL DB**  
+Then copy `DATABASE_URL` into **backend env**
 
 ---
 
-### Frontend (Render / Vercel)
+### 🔹 Frontend — Render or Vercel
 
 | Setting | Value |
 |---|---|
@@ -159,12 +169,13 @@ Example: `https://flyswift-api.onrender.com`
 | Build Command | `npm run build` |
 | Publish Directory | `dist` |
 
-📌 Must set env inside deployment  
+📌 Env Required
+
 ```
-VITE_API_URL=https://your-render-backend-url.com
+VITE_API_URL=https://your-backend-url.onrender.com
 ```
 
-### Rewrite Rule (SPA Routing Fix)
+### SPA Route Fix (Render)
 
 | Source | Destination | Type |
 |---|---|---|
@@ -172,15 +183,10 @@ VITE_API_URL=https://your-render-backend-url.com
 
 ---
 
-## 📌 Future Upgrades
+## 🏁 Done — Fully Deployable ⚡
 
-- Seat Selection UI
-- Admin Panel (Add flights manually)
-- Ticket PDF + Email Receipt
-- Real-time seat lock
-
----
-
-## 🏁 You're Ready 🎉  
-Copy → Paste → Push → Deploy.
+Clone ▼  
+Install ▼  
+Connect DB ▼  
+Deploy 🎉
 
