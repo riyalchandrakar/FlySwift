@@ -192,7 +192,7 @@ export default function ResultsPage() {
                          text-blue-600 hover:bg-blue-100 hover:border-blue-300 
                          transition-all flex items-center gap-1"
             >
-              🔁 New Search
+              New Search
             </button>
 
             <p className="text-[11px] text-slate-500 text-right">

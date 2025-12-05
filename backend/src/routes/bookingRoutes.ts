@@ -4,57 +4,61 @@ import { authMiddleware, AuthRequest } from "../middleware/authMiddleware";
 
 const router = Router();
 
-// POST /booking/create
+/* =====================================
+   CREATE BOOKING
+===================================== */
 router.post("/create", authMiddleware, async (req: AuthRequest, res) => {
   const { flightId, passengers, passengerName, passengerEmail } = req.body;
+  console.log("📩 Incoming Booking Request →", req.body);
 
   if (!req.user) return res.status(401).json({ message: "Unauthorized" });
+  if (!flightId) return res.status(400).json({ message: "Flight ID required" });
 
   try {
     const booking = await prisma.booking.create({
       data: {
-        userId: req.user.id,
-        flightId,
-        passengers,
+        userId: req.user.id,                 // 🔥 from token
+        flightId: Number(flightId),          // 🔥 convert to number
+        passengers: Number(passengers),
         passengerName,
         passengerEmail,
       },
-      include: {
-        flight: true,
-      },
+      include: { flight: true }
     });
 
-    res.status(201).json(booking);
-  } catch (err) {
-    res.status(500).json({ message: "Server error" });
+    return res.status(201).json(booking);
+  } catch (err: any) {
+    console.log("❌ BOOKING ERROR:", err);
+    return res.status(500).json({ message: "Booking failed", error: err.message });
   }
 });
 
-// GET /booking/:id
+/* =====================================
+   GET BOOKING BY ID  (for success page)
+===================================== */
 router.get("/:id", authMiddleware, async (req: AuthRequest, res) => {
   const id = Number(req.params.id);
+
   if (!req.user) return res.status(401).json({ message: "Unauthorized" });
 
   try {
     const booking = await prisma.booking.findFirst({
-      where: {
-        id,
-        userId: req.user.id,
-      },
-      include: {
-        flight: true,
-      },
+      where: { id, userId: req.user.id },
+      include: { flight: true }
     });
 
-    if (!booking) return res.status(404).json({ message: "Not found" });
+    if (!booking) return res.status(404).json({ message: "Booking Not Found" });
 
-    res.json(booking);
+    return res.json(booking);
   } catch (err) {
-    res.status(500).json({ message: "Server error" });
+    return res.status(500).json({ message: "Server error" });
   }
 });
 
-// BONUS: booking history
+
+/* =====================================
+   USER BOOKING HISTORY
+===================================== */
 router.get("/", authMiddleware, async (req: AuthRequest, res) => {
   if (!req.user) return res.status(401).json({ message: "Unauthorized" });
 
@@ -62,13 +66,15 @@ router.get("/", authMiddleware, async (req: AuthRequest, res) => {
     const bookings = await prisma.booking.findMany({
       where: { userId: req.user.id },
       include: { flight: true },
-      orderBy: { createdAt: "desc" },
+      orderBy: { createdAt: "desc" }
     });
 
-    res.json(bookings);
-  } catch (err) {
-    res.status(500).json({ message: "Server error" });
+    return res.json(bookings);
+  } catch (err: any) {
+    console.log("❌ HISTORY ERROR:", err);
+    return res.status(500).json({ message: "Error fetching history" });
   }
 });
+
 
 export default router;
