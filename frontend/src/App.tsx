@@ -1,8 +1,5 @@
 import { Routes, Route, Navigate } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { useAppDispatch, useAppSelector } from "./store/hooks";
-import { setUserFromToken } from "./store/authSlice";
-import { jwtDecode } from "jwt-decode";
+import { useSelector } from "react-redux";
 
 // Pages
 import LoginPage from "./pages/LoginPage";
@@ -17,48 +14,24 @@ import BookingHistoryPage from "./pages/BookingHistoryPage";
 // Navbar
 import Navbar from "./components/Navbar";
 
+// Redux
+import { RootState } from "./store";
+
+// 🔒 Private Route (NO localStorage)
+const PrivateRoute = ({ children }: { children: JSX.Element }) => {
+  const user = useSelector((state: RootState) => state.auth.user);
+  return user ? children : <Navigate to="/login" replace />;
+};
+
+// Common Layout
+const Layout = ({ children }: { children: JSX.Element }) => (
+  <>
+    <Navbar />
+    <div className="pt-16 px-4">{children}</div>
+  </>
+);
+
 function App() {
-  const dispatch = useAppDispatch();
-  const user = useAppSelector((state) => state.auth.user);
-  const [authLoaded, setAuthLoaded] = useState(false);
-
-  // 🔁 Restore auth ONLY from sessionStorage
-  useEffect(() => {
-    const token = sessionStorage.getItem("token");
-
-    if (token) {
-      try {
-        const decoded: any = jwtDecode(token);
-        dispatch(
-          setUserFromToken({
-            id: decoded.id,
-            email: decoded.email,
-            name: decoded.name || "User",
-          })
-        );
-      } catch {
-        sessionStorage.removeItem("token");
-      }
-    }
-
-    setAuthLoaded(true);
-  }, [dispatch]);
-
-  // 🔒 Protected route
-  const PrivateRoute = ({ children }: { children: JSX.Element }) => {
-    return user ? children : <Navigate to="/login" replace />;
-  };
-
-  // Common layout
-  const Layout = ({ children }: { children: JSX.Element }) => (
-    <>
-      <Navbar />
-      <div className="pt-16 px-4">{children}</div>
-    </>
-  );
-
-  if (!authLoaded) return null;
-
   return (
     <Routes>
       {/* Public */}
@@ -127,7 +100,7 @@ function App() {
         }
       />
 
-      {/* Fallback */}
+      {/* Default */}
       <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
   );
